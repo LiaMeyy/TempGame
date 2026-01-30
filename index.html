@@ -1,0 +1,163 @@
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Guess - UI Cute Futurista</title>
+
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Poppins:wght@300;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+
+    <div class="card">
+        <div class="title">NUMBER GUESS 🔮</div>
+
+        <div class="subtitle">Adivina el número secreto</div>
+
+        <div class="timer">⏱ <span id="time">
+            30</span>s restantes
+        </div>
+
+
+        <div class="input-box">
+            <input type="number" id="rta" placeholder="1 - 100">
+            <button id="adivinar">TRY 💫</button>
+        </div>
+
+
+        <div class="status">
+             Estado: <span id="status"></span>
+        </div>
+
+
+        <div class="history">
+            Intentos: <span id="intentos">0</span>
+        </div>
+        <div class="secret" id="secret"></div>
+    </div>
+<script>
+
+
+let secret = Math.floor(Math.random() * 100) + 1;
+let time = 30;
+let attempts = [];
+let gameOver = false;
+
+const input = document.getElementById("rta");
+const button = document.getElementById("adivinar");
+const status = document.getElementById("status");
+const timeText = document.getElementById("time");
+const history = document.getElementById("intentos");
+const secretText = document.getElementById("secret");
+const card = document.querySelector(".card");
+
+
+const timer = setInterval(() => {
+
+  if (gameOver) return;
+
+  time--;
+  timeText.textContent = time;
+
+  if (time <= 0) {
+    finishGame(false);
+  }
+
+}, 1000);
+
+
+button.addEventListener("click", check);
+
+input.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") {
+    check();
+  }
+});
+
+
+function check() {
+
+  if (gameOver) return;
+
+  let value = Number(input.value);
+
+  if (!value || value < 1 || value > 100) {
+    status.textContent = "Ingresa un número válido 😾";
+    return;
+  }
+
+  let distance = Math.abs(secret - value);
+
+  attempts.push(value);
+  history.textContent = attempts.join(" - ");
+
+  input.value = "";
+  input.focus();
+
+  card.classList.remove("cold","warm","hot","win");
+
+  if (distance === 0) {
+    finishGame(true);
+    return;
+  }
+
+
+  if (distance <= 5) {
+
+    status.textContent = "🔥 CALIENTE";
+    card.classList.add("hot");
+
+  } 
+  else if (distance <= 15) {
+
+    status.textContent = "🟡 TIBIO";
+    card.classList.add("warm");
+
+  } 
+  else {
+
+    status.textContent = "❄️ FRÍO";
+    card.classList.add("cold");
+
+  }
+
+}
+
+
+
+function finishGame(win){
+
+  gameOver = true;
+
+  clearInterval(timer);
+
+  input.disabled = true;
+  button.disabled = true;
+
+  if (win){
+
+    status.textContent = "🏆 GANASTE";
+    card.classList.add("win");
+
+  } else {
+
+    status.textContent = "☠️ TIEMPO AGOTADO";
+    secretText.textContent = "El número era: " + secret;
+    card.classList.add("hot");
+
+  }
+
+}
+
+
+</script>
+
+</body>
+
+</html>
